@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
 
 plugins {
     kotlin("jvm") version "1.2.60"
@@ -32,6 +33,8 @@ dependencies {
     compile("io.arrow-kt:arrow-effects:$arrowVersion")
 
 }
+
+kotlin.experimental.coroutines = Coroutines.ENABLE
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

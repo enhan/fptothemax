@@ -6,7 +6,7 @@ import arrow.core.Try
 import arrow.effects.ForIO
 import arrow.effects.IO
 import arrow.effects.console
-import arrow.effects.fRandomConsole
+import arrow.effects.fRandom
 import arrow.effects.fix
 import arrow.effects.monad
 import arrow.instance
@@ -36,7 +36,7 @@ interface FRandom<F> {
 }
 
 @instance(IO::class)
-interface FRandomConsoleInstance: FRandom<ForIO> {
+interface FRandomInstance: FRandom<ForIO> {
     override fun nextInt(upper: Int): Kind<ForIO, Int> = IO { ORandom.nextInt(upper) }
 }
 
@@ -80,7 +80,7 @@ object Step1 {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val r = fMain(MonadAndConsoleRandom(IO.monad(), IO.console(), IO.fRandomConsole()))
+        val r = fMain(MonadAndConsoleRandom(IO.monad(), IO.console(), IO.fRandom()))
         r.fix().unsafeRunSync()
     }
 
