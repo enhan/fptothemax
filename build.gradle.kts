@@ -28,7 +28,8 @@ dependencies {
     compile("io.arrow-kt:arrow-data:$arrowVersion")
     compile("io.arrow-kt:arrow-instances-core:$arrowVersion")
     compile("io.arrow-kt:arrow-instances-data:$arrowVersion")
-    kapt(    "io.arrow-kt:arrow-annotations-processor:$arrowVersion")
+    compile("io.arrow-kt:arrow-effects:$arrowVersion")
+    kapt("io.arrow-kt:arrow-annotations-processor:$arrowVersion")
 
     compile("io.arrow-kt:arrow-effects:$arrowVersion")
 
