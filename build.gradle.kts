@@ -11,7 +11,7 @@ apply(from = rootProject.file("gradle/generated-kotlin-sources.gradle"))
 group = "eu.enhan"
 version = "1.0-SNAPSHOT"
 
-val arrowVersion = "0.7.2"
+val arrowVersion = "0.7.3"
 
 repositories {
     jcenter()

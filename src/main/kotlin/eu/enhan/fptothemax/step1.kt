@@ -1,8 +1,8 @@
 package eu.enhan.fptothemax
 
 import arrow.Kind
-import arrow.core.Option
-import arrow.core.Try
+import arrow.core.*
+import arrow.data.*
 import arrow.effects.IO
 import arrow.effects.fix
 import arrow.effects.monadDefer
@@ -32,6 +32,29 @@ class FRandomInstance<F>(val delay: MonadDefer<F>) : FRandom<F> {
 }
 
 class MonadAndConsoleRandom<F>(M: Monad<F>, C: Console<F>, R: FRandom<F>) : Monad<F> by M, Console<F> by C, FRandom<F> by R
+
+data class TestData(val input: List<String>, val output: List<String>, val nums: List<Int>) {
+  fun putStrLn(s: String): Tuple2<TestData, Unit> = copy(output = output.plus(s)) toT Unit
+  fun getStrLn(): Tuple2<TestData, String> = copy(input = input.drop(1)) toT input[0]
+  fun nextInt(upper: Int): Tuple2<TestData, Int> = copy(nums = nums.drop(1)) toT nums[0]
+}
+
+typealias TestIO<A> = State<TestData, A>
+typealias ForTestIO = StatePartialOf<TestData>
+
+// Helper to make it clearer.
+fun <A> TestIO(f: (TestData) -> Tuple2<TestData, A>) = State(f)
+
+class TestIORandomInstance: FRandom<ForTestIO> {
+  override fun nextInt(upper: Int): Kind<ForTestIO, Int> = TestIO { it.nextInt(upper) }
+}
+
+class TestIOConsoleInstance: Console<ForTestIO> {
+  override fun putStrLn(s: String): Kind<ForTestIO, Unit> = TestIO { it.putStrLn(s)}
+  override fun getStrLn(): Kind<ForTestIO, String> = TestIO { it.getStrLn() }
+}
+
+
 
 object Step1 {
 
@@ -73,6 +96,17 @@ object Step1 {
     }
     val r = module.fMain()
     r.fix().unsafeRunSync()
+  }
+
+
+
+  fun test(): List<String> = run {
+    val testData: TestData = TestData(listOf("Plop", "4", "n"), listOf(), listOf(3))
+
+    val m: Monad<ForTestIO> = StateT.monad(Id.monad())
+    val module: MonadAndConsoleRandom<ForTestIO> = MonadAndConsoleRandom(m, TestIOConsoleInstance(), TestIORandomInstance() )
+
+    module.fMain().fix().run(testData).a.output
   }
 
 }
